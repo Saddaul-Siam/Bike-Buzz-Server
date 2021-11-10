@@ -42,8 +42,9 @@ async function run() {
     const database = client.db("bike-buzz");
 
     const productsCollection = database.collection("products");
-    const ordersCollection = database.collection("orders");
     const usersCollection = database.collection("users");
+    const reviewCollection = database.collection("review");
+    const ordersCollection = database.collection("orders");
 
     app.post('/users', async (req, res) => {
       const user = req.body
@@ -89,18 +90,18 @@ async function run() {
       res.json({ admin: isAdmin });
     });
 
-
+    // add products
     app.post('/addProducts', async (req, res) => {
       console.log(req.body);
       const result = await productsCollection.insertOne(req.body)
       res.json(result);
     });
-
+    // get all products
     app.get('/products', async (req, res) => {
       const result = await productsCollection.find({}).toArray();
       res.json(result);
     });
-
+    // delete products
     app.delete('/deleteProducts/:id', async (req, res) => {
       const id = req.params.id;
       const result = await productsCollection.deleteOne({ _id: ObjectId(id) })
@@ -109,7 +110,20 @@ async function run() {
       } else {
         console.log("No documents matched the query. Deleted 0 documents.");
       }
+    });
+
+    // add review
+    app.post('/addReview', async (req, res) => {
+      const result = await reviewCollection.insertOne(req.body);
+      res.json(result);
+    });
+
+    // get review 
+    app.get('/review', async (req, res) => {
+      const result = await reviewCollection.find({}).toArray();
+      res.json(result);
     })
+
 
   }
   finally {
