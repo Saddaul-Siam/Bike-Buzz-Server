@@ -40,13 +40,10 @@ async function run() {
   try {
     await client.connect();
     const database = client.db("bike-buzz");
-    const productsCollection = database.collection("products");
-    const usersCollection = database.collection("users");
 
-    app.post('/addProducts', async (req, res) => {
-      const result = await productsCollection.insertOne(req.body)
-      res.json(result);
-    });
+    const productsCollection = database.collection("products");
+    const ordersCollection = database.collection("orders");
+    const usersCollection = database.collection("users");
 
     app.post('/users', async (req, res) => {
       const user = req.body
@@ -93,6 +90,27 @@ async function run() {
     });
 
 
+    app.post('/addProducts', async (req, res) => {
+      console.log(req.body);
+      const result = await productsCollection.insertOne(req.body)
+      res.json(result);
+    });
+
+    app.get('/products', async (req, res) => {
+      const result = await productsCollection.find({}).toArray();
+      res.json(result);
+    });
+
+    app.delete('/deleteProducts/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await productsCollection.deleteOne({ _id: ObjectId(id) })
+      if (result.deletedCount === 1) {
+        console.log("Successfully deleted one document.");
+      } else {
+        console.log("No documents matched the query. Deleted 0 documents.");
+      }
+    })
+
   }
   finally {
     // await client.close();
@@ -106,4 +124,4 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
-})
+});
