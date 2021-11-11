@@ -79,7 +79,6 @@ async function run() {
     });
 
     app.get('/users/:email', async (req, res) => {
-      // console.log(req.params);
       const email = req.params.email;
       const query = { email: email };
       const user = await usersCollection.findOne(query);
@@ -105,10 +104,8 @@ async function run() {
 
     // get single product
     app.get('/product/:id', async (req, res) => {
-      // console.log(req.params.id);
       const filter = req.params.id;
       const result = await productsCollection.findOne({ _id: ObjectId(filter) });
-      // console.log(result);
       res.json(result);
     });
 
@@ -137,11 +134,21 @@ async function run() {
       res.json(result);
     });
 
-
     // orders post api
     app.post('/order', async (req, res) => {
       const result = await ordersCollection.insertOne(req.body)
       res.json(result);
+    });
+    // get order by email
+    app.get('/order/:email', async (req, res) => {
+      const result = await ordersCollection.find({ email: req.params.email }).toArray()
+      res.json(result);
+    });
+    // delete single order
+    app.delete('/order/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await ordersCollection.deleteOne({ _id: ObjectId(id) })
+      res.json(result)
       console.log(result);
     })
 
