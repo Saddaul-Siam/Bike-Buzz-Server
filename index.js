@@ -134,22 +134,44 @@ async function run() {
       res.json(result);
     });
 
+    //////////////////// order sections/////////////////////
+
     // orders post api
     app.post('/order', async (req, res) => {
       const result = await ordersCollection.insertOne(req.body)
       res.json(result);
     });
+
+    // get all orders
+    app.get('/orders', async (req, res) => {
+      const result = await ordersCollection.find({}).toArray();
+      res.json(result);
+    });
+
     // get order by email
     app.get('/order/:email', async (req, res) => {
       const result = await ordersCollection.find({ email: req.params.email }).toArray()
       res.json(result);
     });
+
+    // update order
+    app.put('/order/:id', async (req, res) => {
+      const filter = { _id: ObjectId(req.params.id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          status: req.body.status
+        },
+      };
+      const result = await ordersCollection.updateOne(filter, updateDoc, options);
+      res.json(result);
+    })
+
     // delete single order
     app.delete('/order/:id', async (req, res) => {
       const id = req.params.id;
       const result = await ordersCollection.deleteOne({ _id: ObjectId(id) })
       res.json(result)
-      console.log(result);
     })
 
 
