@@ -79,7 +79,7 @@ async function run() {
     });
 
     app.get('/users/:email', async (req, res) => {
-      console.log(req.params);
+      // console.log(req.params);
       const email = req.params.email;
       const query = { email: email };
       const user = await usersCollection.findOne(query);
@@ -92,24 +92,37 @@ async function run() {
 
     // add products
     app.post('/addProducts', async (req, res) => {
-      console.log(req.body);
+      // console.log(req.body);
       const result = await productsCollection.insertOne(req.body)
       res.json(result);
     });
+
     // get all products
     app.get('/products', async (req, res) => {
       const result = await productsCollection.find({}).toArray();
       res.json(result);
     });
+
+    // get single product
+    app.get('/product/:id', async (req, res) => {
+      // console.log(req.params.id);
+      const filter = req.params.id;
+      const result = await productsCollection.findOne({ _id: ObjectId(filter) });
+      // console.log(result);
+      res.json(result);
+    });
+
+    // get home pages service products
+    app.get('/mainServices', async (req, res) => {
+      const result = await productsCollection.find({}).limit(6).toArray();
+      res.json(result);
+    });
+
     // delete products
     app.delete('/deleteProducts/:id', async (req, res) => {
       const id = req.params.id;
       const result = await productsCollection.deleteOne({ _id: ObjectId(id) })
-      if (result.deletedCount === 1) {
-        console.log("Successfully deleted one document.");
-      } else {
-        console.log("No documents matched the query. Deleted 0 documents.");
-      }
+      res.json(result)
     });
 
     // add review
@@ -122,6 +135,14 @@ async function run() {
     app.get('/review', async (req, res) => {
       const result = await reviewCollection.find({}).toArray();
       res.json(result);
+    });
+
+
+    // orders post api
+    app.post('/order', async (req, res) => {
+      const result = await ordersCollection.insertOne(req.body)
+      res.json(result);
+      console.log(result);
     })
 
 
