@@ -29,9 +29,7 @@ async function verifyToken(req, res, next) {
       req.decodedEmail = decodedUser.email;
     }
     catch {
-
     }
-
   }
   next();
 }
@@ -40,11 +38,12 @@ async function run() {
   try {
     await client.connect();
     const database = client.db("bike-buzz");
-
     const productsCollection = database.collection("products");
     const usersCollection = database.collection("users");
     const reviewCollection = database.collection("review");
     const ordersCollection = database.collection("orders");
+
+    //////////////////////////// User section ////////////////////////////////////
 
     app.post('/users', async (req, res) => {
       const user = req.body
@@ -88,7 +87,9 @@ async function run() {
       }
       res.json({ admin: isAdmin });
     });
+    //////////////////////////// User section ////////////////////////////////////
 
+    //////////////////////////// Products section ////////////////////////////////////
     // add products
     app.post('/addProducts', async (req, res) => {
       // console.log(req.body);
@@ -122,6 +123,10 @@ async function run() {
       res.json(result)
     });
 
+    //////////////////////////// Products section ////////////////////////////////////
+
+    //////////////////////////// Review section ////////////////////////////////////
+
     // add review
     app.post('/addReview', async (req, res) => {
       const result = await reviewCollection.insertOne(req.body);
@@ -129,12 +134,49 @@ async function run() {
     });
 
     // get review 
-    app.get('/review', async (req, res) => {
-      const result = await reviewCollection.find({}).toArray();
-      res.json(result);
+    /* app.get('/reviews', async (req, res) => {
+      const cursor = reviewCollection.find({});
+      const page = req.query.page;
+      const size = parseInt(req.query.size);
+      let reviews;
+      const count = await cursor.count();
+      if (page) {
+        reviews = await cursor.skip(page * size).limit(size).toArray();
+      }
+      else {
+        reviews = await cursor.toArray();
+      }
+      res.json({
+        count,
+        reviews
+      });
+    }); */
+
+
+    app.get('/reviews', async (req, res) => {
+      const cursor = reviewCollection.find({});
+      const page = req.query.page;
+      const size = parseInt(req.query.size);
+      let reviews;
+      const count = await cursor.count();
+
+      if (page) {
+        reviews = await cursor.skip(page * size).limit(size).toArray();
+      }
+      else {
+        reviews = await cursor.toArray();
+      }
+
+      res.send({
+        count,
+        reviews
+      });
     });
 
-    //////////////////// order sections/////////////////////
+    //////////////////////////// Review section ////////////////////////////////////
+
+
+    //////////////////////////// order sections ////////////////////////////////////
 
     // orders post api
     app.post('/order', async (req, res) => {
@@ -173,7 +215,7 @@ async function run() {
       const result = await ordersCollection.deleteOne({ _id: ObjectId(id) })
       res.json(result)
     })
-
+    //////////////////////////// order sections ////////////////////////////////////
 
   }
   finally {
@@ -183,7 +225,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Bike buzz server is running!')
 })
 
 app.listen(port, () => {
