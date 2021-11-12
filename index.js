@@ -134,25 +134,6 @@ async function run() {
     });
 
     // get review 
-    /* app.get('/reviews', async (req, res) => {
-      const cursor = reviewCollection.find({});
-      const page = req.query.page;
-      const size = parseInt(req.query.size);
-      let reviews;
-      const count = await cursor.count();
-      if (page) {
-        reviews = await cursor.skip(page * size).limit(size).toArray();
-      }
-      else {
-        reviews = await cursor.toArray();
-      }
-      res.json({
-        count,
-        reviews
-      });
-    }); */
-
-
     app.get('/reviews', async (req, res) => {
       const cursor = reviewCollection.find({});
       const page = req.query.page;
