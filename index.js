@@ -110,12 +110,6 @@ async function run() {
       res.json(result);
     });
 
-    // get home pages service products
-    app.get('/mainServices', async (req, res) => {
-      const result = await productsCollection.find({}).limit(6).toArray();
-      res.json(result);
-    });
-
     // delete products
     app.delete('/deleteProducts/:id', async (req, res) => {
       const id = req.params.id;
